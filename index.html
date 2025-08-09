@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Firebase Chat App</title>
+  <style>
+    body { font-family: Arial; max-width: 400px; margin: auto; }
+    #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; }
+    input { width: 80%; padding: 5px; }
+    button { width: 18%; padding: 5px; }
+  </style>
+</head>
+<body>
+
+<h2>Realtime Chat</h2>
+<div id="messages"></div>
+<input id="messageInput" placeholder="Type a message..." />
+<button id="sendBtn">Send</button>
+
+<script type="module">
+  // Firebase v9 imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDNRsw21wFZ-6Wtf7sgcdFnwidc4gAnN7k",
+    authDomain: "message-app-c293d.firebaseapp.com",
+    databaseURL: "https://message-app-c293d-default-rtdb.firebaseio.com",
+    projectId: "message-app-c293d",
+    storageBucket: "message-app-c293d.firebasestorage.app",
+    messagingSenderId: "790011787957",
+    appId: "1:790011787957:web:6a09c8e738c4e5ff069cfc"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const messagesDiv = document.getElementById("messages");
+  const messageInput = document.getElementById("messageInput");
+  const sendBtn = document.getElementById("sendBtn");
+
+  // Send message
+  sendBtn.addEventListener("click", () => {
+    const text = messageInput.value;
+    if (text.trim() !== "") {
+      push(ref(db, "messages"), { text: text });
+      messageInput.value = "";
+    }
+  });
+
+  // Listen for messages
+  onChildAdded(ref(db, "messages"), (snapshot) => {
+    const msg = snapshot.val();
+    const p = document.createElement("p");
+    p.textContent = msg.text;
+    messagesDiv.appendChild(p);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  });
+</script>
+
+</body>
+</html>

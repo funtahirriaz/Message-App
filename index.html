@@ -61,4 +61,31 @@
 </script>
 
 </body>
+</html>  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const messagesDiv = document.getElementById("messages");
+  const messageInput = document.getElementById("messageInput");
+  const sendBtn = document.getElementById("sendBtn");
+
+  // Send message
+  sendBtn.addEventListener("click", () => {
+    const text = messageInput.value;
+    if (text.trim() !== "") {
+      push(ref(db, "messages"), { text: text });
+      messageInput.value = "";
+    }
+  });
+
+  // Listen for messages
+  onChildAdded(ref(db, "messages"), (snapshot) => {
+    const msg = snapshot.val();
+    const p = document.createElement("p");
+    p.textContent = msg.text;
+    messagesDiv.appendChild(p);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  });
+</script>
+
+</body>
 </html>
